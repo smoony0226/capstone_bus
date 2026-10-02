@@ -3,6 +3,13 @@
 TEAM RACER의 BUS1을 기준으로 만든 브라우저용 3D 치수 뷰어입니다.
 전장 940 mm, 전폭 180 mm, 전고 230 mm, 축거 410 mm를 기준으로 외형과 축 위치를 확인합니다.
 
+## 바로 보기
+
+### [▶ 뷰어 실행](https://smoony0226.github.io/capstone_bus/)
+
+배포 준비 중입니다. 현재 비공개 저장소의 GitHub Pages 사용이 요금제 제한으로 막혀 있으며,
+공개 전환 확인 후 활성화합니다. 활성화되면 설치 없이 PC·모바일 브라우저에서 바로 열립니다.
+
 저장소: [smoony0226/capstone_bus](https://github.com/smoony0226/capstone_bus) (비공개).
 
 ## 실행
@@ -20,7 +27,9 @@ npm run build
 npm run preview
 ```
 
-`dist/`는 정적 호스팅에 올릴 수 있는 결과물입니다. 상대 경로로 빌드하므로 GitHub Pages의 `/capstone_bus/`에서도 동작합니다. 공개 배포는 아직 하지 않았습니다.
+`dist/`는 정적 호스팅에 올릴 수 있는 결과물입니다. 상대 경로로 빌드하므로 GitHub Pages의 `/capstone_bus/`에서도 동작합니다.
+빌드 결과는 `gh-pages` 브랜치에 저장합니다. Pages의 배포 원천은 해당 브랜치의 루트입니다.
+현재 공개 배포는 아직 하지 않았습니다. 소스를 수정하면 다시 빌드한 결과를 배포 브랜치에 반영해야 합니다.
 
 브라우저 회귀 시험은 `npx playwright install chromium` 후 개발 서버를 실행한 상태에서
 `npm run test:browser`로 수행합니다. 결과 캡처와 검증 경계는 `docs/verification/`에 있습니다.
