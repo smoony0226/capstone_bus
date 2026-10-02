@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { dimensions as d, appearance as a, axlePositions } from "./data.js";
+import { batteryMotion } from "./battery-motion.js";
 
 const paint = new THREE.MeshStandardMaterial({
   color: 0x49bf08,
@@ -158,8 +159,8 @@ function addCamera(parent, x, facing) {
 function buildBattery(parent) {
   const group = new THREE.Group();
   parent.add(group);
-  const length = a.bayFrontX - a.bayRearX,
-    centre = (a.bayFrontX + a.bayRearX) / 2;
+  const length = a.housingFrontX - a.housingRearX,
+    centre = (a.housingFrontX + a.housingRearX) / 2;
   box(group, [length, 5, a.bayWidth], [centre, a.bayFloorY, 0], black);
   for (const z of [-1, 1])
     box(
@@ -168,7 +169,7 @@ function buildBattery(parent) {
       [centre, a.bayFloorY + 10, z * (a.bayWidth / 2 - 2)],
       trim,
     );
-  for (const x of [a.bayRearX + 3, a.bayFrontX - 3])
+  for (const x of [a.housingRearX + 3, a.housingFrontX - 3])
     box(group, [5, 22, a.bayWidth], [x, a.bayFloorY + 12, 0], trim);
   const pack = new THREE.Group();
   pack.position.set(centre, a.bayFloorY + 12, 0);
@@ -184,19 +185,37 @@ function buildBattery(parent) {
   );
   box(pack, [24, 1.2, 24], [0, 9.2, 0], black);
   const lid = new THREE.Group();
-  lid.position.set(a.bayFrontX, a.roofHeight, 0);
+  lid.position.set(a.housingRearX, a.roofHeight, 0);
   group.add(lid);
-  box(lid, [length, 5, a.bayWidth + 8], [-length / 2, -2.5, 0], paint);
+  const hoodHeight = d.height - a.roofHeight;
+  box(lid, [length, 4, d.width - 12], [length / 2, hoodHeight - 2, 0], paint);
   for (const z of [-1, 1])
     box(
       lid,
-      [length, 9, 3],
-      [-length / 2, -7, z * (a.bayWidth / 2 + 2)],
+      [length, hoodHeight, 3],
+      [length / 2, hoodHeight / 2, z * (d.width / 2 - 7.5)],
       paint,
     );
-  for (const z of [-50, 50])
-    cylinder(group, 3, 17, [a.bayFrontX, a.roofHeight - 3, z], chrome);
-  return { lid, pack, packRestY: pack.position.y };
+  for (const x of [2, length - 2])
+    box(lid, [4, hoodHeight, d.width - 18], [x, hoodHeight / 2, 0], paint);
+  for (const z of [-1, 1])
+    box(
+      group,
+      [length + a.hoodSlideDistance, 3, 4],
+      [
+        centre + a.hoodSlideDistance / 2,
+        a.roofHeight + 1.5,
+        z * (a.bayWidth / 2 + 5),
+      ],
+      chrome,
+    );
+  box(
+    group,
+    [a.bayFrontX - a.bayRearX, 4, a.bayWidth],
+    [(a.bayFrontX + a.bayRearX) / 2, a.bayFloorY, 0],
+    black,
+  );
+  return { lid, pack, packRestY: pack.position.y, lidRestX: lid.position.x };
 }
 
 export function buildBus() {
@@ -298,8 +317,8 @@ export function buildBus() {
   }
   box(
     root,
-    [a.bayRearX + d.length / 2, 5, d.width],
-    [(-d.length / 2 + a.bayRearX) / 2, a.roofHeight - 2.5, 0],
+    [a.housingRearX + d.length / 2, 5, d.width],
+    [(-d.length / 2 + a.housingRearX) / 2, a.roofHeight - 2.5, 0],
     paint,
   );
   box(
@@ -311,20 +330,14 @@ export function buildBus() {
   for (const sign of [-1, 1])
     box(
       root,
-      [a.bayFrontX - a.bayRearX, 5, (d.width - a.bayWidth) / 2],
+      [a.bayFrontX - a.housingRearX, 5, (d.width - a.bayWidth) / 2],
       [
-        (a.bayRearX + a.bayFrontX) / 2,
+        (a.housingRearX + a.bayFrontX) / 2,
         a.roofHeight - 2.5,
         (sign * (d.width + a.bayWidth)) / 4,
       ],
       paint,
     );
-  box(
-    root,
-    [a.housingFrontX - a.housingRearX, d.height - a.roofHeight, d.width - 12],
-    [(a.housingFrontX + a.housingRearX) / 2, (d.height + a.roofHeight) / 2, 0],
-    paint,
-  );
   roofWordmark(root);
   const cameras = new THREE.Group();
   root.add(cameras);
@@ -335,7 +348,9 @@ export function buildBus() {
 }
 
 export function setBatteryOpening(battery, fraction) {
-  battery.lid.rotation.z = ((-a.lidOpenAngle * Math.PI) / 180) * fraction;
+  const motion = batteryMotion(fraction);
+  battery.lid.position.x = battery.lidRestX + motion.slide;
+  battery.lid.rotation.z = motion.angle;
 }
 
 export function setBatteryRemoval(battery, fraction) {

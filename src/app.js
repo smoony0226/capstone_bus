@@ -5,17 +5,16 @@ import {
   references,
   validateDimensions,
 } from "./data.js";
+import { batteryMotion } from "./battery-motion.js";
 
 const $ = (selector) => document.querySelector(selector);
 const base = import.meta.env.BASE_URL;
 
 function renderDetails() {
-  const icons = ["↔", "↔", "↕", "⊙"];
   $("#metrics").innerHTML = measurements
-    .slice(0, 4)
     .map(
-      ([key, label], i) =>
-        `<div class="metric"><div><span class="metric-title">${label}</span><strong>${dimensions[key]}<small>mm</small></strong></div><span class="metric-symbol" aria-hidden="true">${icons[i]}</span></div>`,
+      ([key, label]) =>
+        `<span>${label}<strong>${dimensions[key]} mm</strong></span>`,
     )
     .join("");
   $("#dimension-table").innerHTML = measurements
@@ -123,6 +122,18 @@ async function startViewer() {
   const bus = buildBus();
   scene.add(bus.root);
   const lines = createDimensionLines(scene, $("#labels"));
+  const scheme = window.matchMedia("(prefers-color-scheme: dark)");
+  function updateSceneTheme() {
+    grid.material.color.set(scheme.matches ? 0x536078 : 0xb9c4d0);
+    lines.groups.overall.children.forEach((line) =>
+      line.material.color.set(scheme.matches ? 0x75adf0 : 0x2563a9),
+    );
+    lines.groups.axles.children.forEach((line) =>
+      line.material.color.set(scheme.matches ? 0xf3c75f : 0xa56b00),
+    );
+  }
+  scheme.addEventListener("change", updateSceneTheme);
+  updateSceneTheme();
   const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 10000),
     perspective = new THREE.PerspectiveCamera(35, 1, 1, 10000);
   let camera = ortho;
@@ -189,9 +200,9 @@ async function startViewer() {
       top: "TOP",
     }[view];
   }
+  let displayedOpening = 0;
   function removal(value) {
     state.removal = value;
-    setBatteryRemoval(bus.battery, value);
     $("#battery-remove").setAttribute("aria-pressed", String(value > 0));
     $("#battery-remove").textContent =
       value > 0 ? "배터리 장착 ↓" : "배터리 탈거 ↑";
@@ -200,14 +211,13 @@ async function startViewer() {
     state.opening = Math.max(0, Math.min(100, value));
     $("#opening").value = String(state.opening);
     $("#opening-value").value = `${state.opening}%`;
-    setBatteryOpening(bus.battery, state.opening / 100);
     $("#battery-toggle").setAttribute(
       "aria-pressed",
       String(state.opening > 0),
     );
     $("#battery-toggle").textContent =
       state.opening > 0 ? "배터리함 닫기" : "배터리함 열기";
-    if (state.opening < 60) removal(0);
+    if (state.opening < 100) removal(0);
   }
   document
     .querySelectorAll("[data-view]")
@@ -244,7 +254,7 @@ async function startViewer() {
   $("#battery-focus").addEventListener("click", () => {
     setView("iso");
     camera.position.set(720, 730, 740);
-    controls.target.set(235, 195, 0);
+    controls.target.set(45, 205, 0);
     camera.zoom = 1.6;
     camera.updateProjectionMatrix();
     controls.update();
@@ -284,7 +294,30 @@ async function startViewer() {
   updateVisibility();
   $("#load-status").hidden = true;
   canvas.dataset.ready = "true";
-  renderer.setAnimationLoop(() => {
+  let lastFrame = performance.now();
+  renderer.setAnimationLoop((now) => {
+    const dt = Math.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+    const target = state.opening / 100;
+    const delta = target - displayedOpening;
+    displayedOpening += Math.sign(delta) * Math.min(Math.abs(delta), dt / 1.5);
+    setBatteryOpening(bus.battery, displayedOpening);
+    setBatteryRemoval(
+      bus.battery,
+      displayedOpening >= 0.999 ? state.removal : 0,
+    );
+    const phase = batteryMotion(displayedOpening).phase;
+    canvas.dataset.batteryPhase = phase;
+    canvas.dataset.batteryProgress = String(Math.round(displayedOpening * 100));
+    canvas.dataset.packRemoved = String(
+      displayedOpening >= 0.999 && state.removal > 0,
+    );
+    $("#battery-status").textContent = {
+      closed: "배터리 하우징 닫힘",
+      sliding: "1단계 · 앞쪽으로 슬라이드",
+      folding: "2단계 · 뒤쪽으로 젖히기",
+      open: "앞쪽 슬라이드 → 뒤로 젖힘 완료",
+    }[phase];
     controls.update();
     renderer.render(scene, camera);
     lines.update(camera, stage.clientWidth, stage.clientHeight, state.view);

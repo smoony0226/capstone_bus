@@ -89,7 +89,8 @@ export const appearance = Object.freeze({
   bayFloorY: 181,
   housingRearX: -75,
   housingFrontX: 135,
-  lidOpenAngle: 110,
+  hoodSlideDistance: 70,
+  hoodFoldAngle: 120,
   cameraHeight: 170,
 });
 

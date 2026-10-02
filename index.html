@@ -3,97 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4f5f1" />
+    <meta name="theme-color" content="#10141c" />
     <meta
       name="description"
-      content="TEAM RACER BUS1 실측 치수와 배터리 교환부를 확인하는 3D 뷰어"
+      content="TEAM RACER BUS1 실측 치수와 배터리 교환부 3D 뷰어"
     />
-    <title>CAPSTONE BUS · BUS1 치수 뷰어</title>
+    <title>CAPSTONE BUS · BUS1 실측 치수</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <main>
-      <header class="page-header">
-        <a class="wordmark" href="#">CAPSTONE<span>BUS</span><i></i></a>
-        <span class="header-meta"
-          >TEAM RACER <span>/</span> DIMENSION REFERENCE</span
-        >
-      </header>
-      <section class="intro">
-        <div>
-          <p class="eyebrow">01 / VEHICLE GEOMETRY</p>
-          <h1>우리 버스, <span>한눈에.</span></h1>
-          <p class="lead">
-            차체부터 배터리 교환부까지. 돌려 보고, 치수를 확인하세요.
-          </p>
+      <section class="viewer" aria-label="BUS1 3D 치수 뷰어">
+        <div class="viewer-header">
+          <h1>BUS1 실측 치수</h1>
+          <div class="measures" id="metrics" aria-label="현재 표시 치수"></div>
         </div>
-        <div class="model-tag">
-          <span class="status-dot"></span> BUS1 <small>공통 차체 기준</small>
-        </div>
-      </section>
-      <section
-        class="metrics"
-        id="metrics"
-        aria-label="주요 실측 치수"
-      ></section>
-      <section class="viewer-card" aria-label="3D 치수 뷰어">
-        <div class="viewer-toolbar">
-          <div class="segmented" aria-label="카메라 시점">
-            <button data-view="iso" aria-pressed="true">아이소메트릭</button>
-            <button data-view="perspective" aria-pressed="false">원근</button>
-            <button data-view="front" aria-pressed="false">전면</button>
-            <button data-view="side" aria-pressed="false">측면</button>
-            <button data-view="top" aria-pressed="false">상단</button>
-          </div>
-          <button id="reset" class="quiet-button">↺ 초기화</button>
-        </div>
-        <div class="stage" id="stage">
-          <canvas
-            id="canvas"
-            aria-label="녹색 BUS1의 외형, 바퀴 축 위치와 지붕 배터리 교환부를 보여주는 회전 가능한 3D 모델"
-          ></canvas>
-          <div id="labels" aria-hidden="true"></div>
-          <div class="stage-top">
-            <span class="stage-badge">BUS1 · 실측 기준</span
-            ><span class="unit-badge">단위 mm</span>
-          </div>
-          <div id="load-status" role="status">3D 모델 불러오는 중…</div>
-          <div class="stage-bottom">
-            <span>드래그 회전 <b>·</b> 휠 / 핀치 확대 <b>·</b> 우클릭 이동</span
-            ><span id="view-name">ISOMETRIC</span>
-          </div>
-        </div>
-        <div class="viewer-settings">
-          <div class="toggle-group">
-            <label
-              ><input type="checkbox" id="dimensions" checked /> 치수선</label
-            ><label
-              ><input type="checkbox" id="sensors" checked /> 카메라 표시</label
-            >
-          </div>
-          <div class="measure-group" aria-label="표시할 치수">
-            <button data-measure="overall" aria-pressed="true">외형 치수</button
-            ><button data-measure="axles" aria-pressed="false">
+        <div class="viewer-settings viz-controls" aria-label="3D 보기 설정">
+          <span class="model-mode">우리 버스 · BUS1 · 전폭 180 mm</span>
+          <div class="measure-group viz-controls" aria-label="표시할 치수">
+            <button data-measure="overall" aria-pressed="true">
+              외형 치수
+            </button>
+            <button data-measure="axles" aria-pressed="false">
               축 · 바퀴 치수
             </button>
           </div>
+          <label
+            ><input type="checkbox" id="dimensions" checked /> 치수선
+            표시</label
+          >
+          <label
+            ><input type="checkbox" id="sensors" checked /> 카메라 표시</label
+          >
         </div>
-        <div class="battery-control">
-          <div class="battery-title">
-            <span class="battery-icon">▤</span>
-            <div>
-              <strong>지붕 배터리 교환부</strong
-              ><span>덮개를 열어 교환 공간을 살펴보세요.</span>
-            </div>
-          </div>
-          <div class="battery-actions">
-            <button id="battery-focus">교환부 확대 ↗</button
-            ><button id="battery-remove" aria-pressed="false">
-              배터리 탈거 ↑</button
-            ><button id="battery-toggle" class="primary" aria-pressed="false">
-              배터리함 열기
-            </button>
-          </div>
+        <div class="viewer-toolbar viz-controls" aria-label="카메라 시점">
+          <button data-view="iso" aria-pressed="true">아이소메트릭</button>
+          <button data-view="perspective" aria-pressed="false">
+            사시도(원근)
+          </button>
+          <button data-view="front" aria-pressed="false">전면</button>
+          <button data-view="side" aria-pressed="false">측면</button>
+          <button data-view="top" aria-pressed="false">상단</button>
+          <button id="reset">초기화</button>
+        </div>
+        <div
+          class="battery-control viz-controls"
+          aria-label="배터리 교환부 조작"
+        >
+          <button id="battery-toggle" aria-pressed="false">
+            배터리함 열기
+          </button>
+          <button id="battery-remove" aria-pressed="false">
+            배터리 탈거 ↑
+          </button>
+          <button id="battery-focus">배터리 교환부 확대</button>
           <label class="opening-control" for="opening"
             >개방 <output id="opening-value">0%</output
             ><input
@@ -102,22 +65,35 @@
               min="0"
               max="100"
               value="0"
-              aria-label="배터리 덮개 개방 비율"
+              aria-label="배터리 하우징 개방 비율"
           /></label>
+        </div>
+        <div class="stage" id="stage">
+          <canvas
+            id="canvas"
+            aria-label="BUS1 외형과 실측 치수, 앞으로 슬라이드한 뒤 뒤로 젖혀지는 지붕 배터리 하우징을 보여주는 회전 가능한 3D 모형"
+          ></canvas>
+          <div id="labels" aria-hidden="true"></div>
+          <div id="load-status" role="status">3D 모델 불러오는 중…</div>
+          <div class="stage-axis">
+            드래그: 회전 · 휠/핀치: 확대 · 우클릭: 이동
+          </div>
+        </div>
+        <div class="viewer-status" aria-live="polite">
+          <span id="view-name">ISOMETRIC</span> ·
+          <span id="battery-status">배터리 하우징 닫힘</span> · 앞범퍼 기준 앞축
+          190 mm / 뒷축 600 mm
         </div>
       </section>
       <p class="model-note">
-        <span>ⓘ</span> 차체·축 치수는 제공 실측값입니다. 외장 세부 형상, 센서
-        위치, 배터리함 크기와 개폐 동작은 사진 기반 참고 표현이며 추가 실측 후
-        보정합니다.
+        차체·축·바퀴 치수는 제공 실측값입니다. 지붕 돌출 하우징은 앞쪽으로
+        슬라이드한 다음 뒤쪽으로 젖혀집니다. 세부 형상·슬라이드 거리·회전각·센서
+        위치는 참고 표현입니다.
       </p>
       <section class="details-grid">
         <article class="detail-card">
-          <p class="eyebrow">02 / MEASUREMENTS</p>
           <h2>실측 치수</h2>
-          <p class="section-description">
-            앞범퍼부터 시작하는 동일 기준으로 확인합니다.
-          </p>
+          <p>단위는 mm이며, 앞범퍼부터 뒤 끝까지의 길이를 기준으로 합니다.</p>
           <table>
             <thead>
               <tr>
@@ -127,81 +103,62 @@
             </thead>
             <tbody id="dimension-table"></tbody>
           </table>
-          <div class="datum-note">
-            앞범퍼 → 앞축 <b>190</b> + 휠베이스 <b>410</b> + 뒷축 → 뒤 끝
-            <b>340</b> = 전장 <b>940 mm</b>
-          </div>
+          <p class="datum-note">
+            앞범퍼 → 앞축 <strong>190</strong> + 휠베이스 <strong>410</strong> +
+            뒷축 → 뒤 끝 <strong>340</strong> = 전장 <strong>940 mm</strong>
+          </p>
         </article>
         <article class="detail-card">
-          <p class="eyebrow">03 / ONBOARD SENSORS</p>
-          <h2>장착 센서</h2>
-          <p class="section-description">
-            현재 프로젝트의 BUS1 구성 기준입니다.
-          </p>
+          <h2>센서 장착과 역할</h2>
           <div id="sensor-list"></div>
           <p class="sensor-note">
-            내부 IMU·엔코더는 아래 정보로 표시합니다. 정확한 센서 외형 치수와
-            장착 좌표는 추가 확인이 필요합니다.
+            IMU와 모터축 엔코더는 차체 내부에 있습니다. 센서 외형·장착 좌표와
+            후방 카메라의 정확한 위치는 추가 실측 후 보정합니다.
           </p>
         </article>
       </section>
       <section class="system-section">
-        <p class="eyebrow">04 / CONTROL FLOW</p>
-        <h2>버스가 움직이는 흐름</h2>
-        <p class="section-description">카메라 입력부터 모터·서보 제어까지.</p>
+        <h2>차량 제어 흐름</h2>
         <div class="system-flow">
-          <div>
-            <small>영상 입력</small><strong>OAK 카메라</strong
-            ><span>전방 · 후방 JPEG</span>
-          </div>
-          <b aria-hidden="true">→</b>
-          <div>
-            <small>인지 · 제어</small><strong>Jetson Orin</strong
-            ><span>PIDNet 차선 / YOLO 장애물<br />모드 판단 · 안전 판단</span>
-          </div>
-          <b class="uart-arrow">UART →</b>
-          <div>
-            <small>명령 수신</small><strong>ESP32</strong
-            ><span>drv 프레임 → PWM 출력</span>
-          </div>
-          <b aria-hidden="true">→</b>
-          <div>
-            <small>차량 구동</small><strong>모터 · 서보</strong
-            ><span>주행 · 조향 · 배터리 덮개</span>
-          </div>
+          <span><strong>OAK 카메라</strong><small>전·후방 영상</small></span
+          ><b>→</b
+          ><span
+            ><strong>Jetson Orin</strong
+            ><small
+              >PIDNet 차선 · YOLO11n-seg 장애물<br />모드 판단 · 안전
+              판단</small
+            ></span
+          ><b>UART →</b
+          ><span><strong>ESP32</strong><small>drv 프레임 → PWM</small></span
+          ><b>→</b
+          ><span
+            ><strong>모터 · 서보</strong
+            ><small>주행 · 조향 · 배터리 하우징</small></span
+          >
         </div>
-        <p class="sensor-note">
-          drive_adapter가 모드·안전 상태를 합쳐 구동·조향·도어 명령을 50 Hz로
-          전달합니다. 차선 인지는 PIDNet, 장애물 인지는 YOLO11n-seg를
-          사용합니다.
+        <p>
+          drive_adapter가 모드 상태와 안전 상태를 합쳐 구동·조향·도어 명령을 50
+          Hz로 ESP32에 전달합니다.
         </p>
-        <div class="system-context">
-          <span><strong>관제 서버</strong> 다차량 조율 · ESP-NOW / HaLow</span
-          ><span><strong>스테이션 비전</strong> ArUco 정렬 · 도어 확인</span
-          ><span><strong>교체 로봇팔</strong> RS485 · X/Y/Z 동기 구동</span>
-        </div>
-        <p class="sensor-note">
-          전체 운영: 출차 → 트랙 주행 → 복귀 → 배터리 교체 → 출차. 이 뷰어는
-          BUS1 공통 차체의 치수 확인용입니다.
-        </p>
+        <ul>
+          <li>관제 서버: 다차량 조율 · ESP-NOW / HaLow</li>
+          <li>스테이션 비전: ArUco 정렬 · 도어 확인</li>
+          <li>교체 로봇팔: RS485 · X/Y/Z 동기 구동</li>
+        </ul>
+        <p>전체 운영: 출차 → 트랙 주행 → 복귀 → 배터리 교체 → 출차.</p>
       </section>
       <section class="reference-section">
-        <div>
-          <p class="eyebrow">05 / PHOTO REFERENCES</p>
-          <h2>실물 외형 참고</h2>
-          <p class="section-description">
-            제공 사진 5장 · 측면, 전면, 지붕 교환부
-          </p>
-        </div>
+        <h2>실물 외형 참고</h2>
+        <p>제공 사진 5장 · 측면, 전면, 지붕 배터리 교환부</p>
         <div id="reference-gallery" class="reference-gallery"></div>
       </section>
       <footer>
-        <span>CAPSTONE BUS <small>BUS1 DIMENSION VIEWER</small></span
-        ><a
+        CAPSTONE BUS · BUS1 치수 참고용 모형 ·
+        <a
           href="https://github.com/LSC18/fma-t870-viewer"
           target="_blank"
           rel="noreferrer"
-          >뷰어 레퍼런스 ↗</a
+          >뷰어 레퍼런스</a
         >
       </footer>
     </main>
